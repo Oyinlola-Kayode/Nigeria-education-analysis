@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nigeria Education Crisis — Data Analysis Portfolio | Oyinlola Kayode</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#090c12;--surface:#111520;--surface2:#181d2a;--surface3:#1e2436;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#edf0f8;--muted:#6b7394;--muted2:#9aa0ba;
+  --red:#e85d5d;--amber:#e8a23a;--green:#3ab87a;--blue:#4a90d9;--pink:#d45f9e;--purple:#8b6fd4;
+  --radius:12px;--radius-lg:16px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.6}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(9,12,18,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:52px}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;color:var(--text)}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-size:0.8rem;color:var(--muted2);text-decoration:none;transition:color 0.2s}
+.nav-links a:hover{color:var(--text)}
+
+/* LAYOUT */
+.container{max-width:1100px;margin:0 auto;padding:0 2rem}
+section{padding:4rem 0;border-bottom:1px solid var(--border)}
+section:last-child{border-bottom:none}
+
+/* HERO */
+.hero{padding:5rem 0 4rem}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(74,144,217,0.12);color:var(--blue);font-size:0.72rem;font-weight:500;padding:4px 12px;border-radius:20px;margin-bottom:1.5rem;letter-spacing:0.06em;text-transform:uppercase;border:1px solid rgba(74,144,217,0.2)}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:800;line-height:1.15;margin-bottom:1rem}
+.hero h1 span{color:var(--red)}
+.hero-sub{font-size:1.05rem;color:var(--muted2);max-width:640px;margin-bottom:2rem;line-height:1.7}
+.hero-meta{display:flex;flex-wrap:wrap;gap:1.5rem}
+.meta-item{display:flex;flex-direction:column;gap:2px}
+.meta-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em}
+.meta-value{font-size:0.9rem;color:var(--muted2);font-weight:500}
+
+/* BADGES */
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:1.5rem}
+.badge{font-size:0.72rem;padding:4px 10px;border-radius:6px;border:1px solid var(--border2);color:var(--muted2)}
+
+/* SECTION HEADINGS */
+.section-tag{display:inline-block;font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--blue);margin-bottom:0.5rem}
+.section-title{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:0.75rem}
+.section-desc{color:var(--muted2);font-size:0.95rem;max-width:680px;line-height:1.7;margin-bottom:2rem}
+
+/* ABSTRACT */
+.abstract-box{background:var(--surface);border:1px solid var(--border2);border-left:3px solid var(--blue);border-radius:var(--radius);padding:1.75rem 2rem}
+.abstract-box p{color:var(--muted2);line-height:1.8;font-size:0.95rem}
+.abstract-box p+p{margin-top:1rem}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:1.5rem 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.kpi-label{font-size:0.75rem;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em}
+.kpi-value{font-family:'Syne',sans-serif;font-size:2rem;font-weight:700;line-height:1}
+.kpi-note{font-size:0.72rem;color:var(--muted);margin-top:5px}
+.kpi-value.red{color:var(--red)}
+.kpi-value.green{color:var(--green)}
+.kpi-value.amber{color:var(--amber)}
+.kpi-value.blue{color:var(--blue)}
+
+/* CHART GRID */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin:1.5rem 0}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.chart-title{font-size:0.75rem;color:var(--muted);margin-bottom:1rem;text-transform:uppercase;letter-spacing:0.04em}
+.chart-wrap{position:relative;width:100%;height:220px}
+.legend{display:flex;gap:14px;margin-bottom:10px;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--muted)}
+.leg-swatch{width:14px;height:3px;border-radius:2px}
+
+/* STORY SECTIONS */
+.story-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.5rem}
+.story-num{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;color:var(--border2);line-height:1;flex-shrink:0}
+.story-title{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:700;margin-bottom:0.25rem}
+.story-desc{font-size:0.9rem;color:var(--muted2);line-height:1.6}
+
+/* FINDINGS */
+.findings{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-top:1.5rem}
+.findings h4{font-family:'Syne',sans-serif;font-size:0.9rem;margin-bottom:1rem;color:var(--muted2);text-transform:uppercase;letter-spacing:0.05em}
+.finding-item{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;font-size:0.875rem;color:#c2c8df;line-height:1.6}
+.finding-item:last-child{margin-bottom:0}
+.fi-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px}
+.fi-dot.red{background:var(--red)}
+.fi-dot.amber{background:var(--amber)}
+.fi-dot.green{background:var(--green)}
+.fi-dot.blue{background:var(--blue)}
+.fi-dot.pink{background:var(--pink)}
+
+/* METHODOLOGY */
+.method-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin:1.5rem 0}
+.method-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.method-step{font-family:'Syne',sans-serif;font-size:0.7rem;color:var(--blue);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px}
+.method-card h4{font-size:0.95rem;font-weight:500;margin-bottom:8px}
+.method-card p{font-size:0.82rem;color:var(--muted2);line-height:1.6}
+
+/* DATA SOURCE */
+.source-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem}
+.source-box h4{font-size:0.85rem;font-weight:500;margin-bottom:6px}
+.source-box p{font-size:0.82rem;color:var(--muted2);line-height:1.6}
+.source-box a{color:var(--blue);text-decoration:none}
+.source-box a:hover{text-decoration:underline}
+
+/* LIMITATIONS */
+.limit-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
+.limit-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:var(--radius);padding:1.1rem}
+.limit-card h4{font-size:0.85rem;font-weight:500;margin-bottom:6px;color:var(--amber)}
+.limit-card p{font-size:0.82rem;color:var(--muted2);line-height:1.6}
+
+/* RECOMMENDATIONS */
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:1.5rem}
+.rec-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.rec-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--border2);margin-bottom:6px}
+.rec-card h4{font-size:0.9rem;font-weight:500;margin-bottom:6px}
+.rec-card p{font-size:0.82rem;color:var(--muted2);line-height:1.6}
+
+/* REPLICATION */
+.code-block{background:#0d1117;border:1px solid var(--border2);border-radius:var(--radius);padding:1.25rem;font-family:'Courier New',monospace;font-size:0.8rem;color:#c9d1d9;overflow-x:auto;margin:1rem 0;line-height:1.8}
+.code-block .comment{color:#6a737d}
+.code-block .keyword{color:#ff7b72}
+.code-block .string{color:#a5d6ff}
+.step-list{list-style:none;counter-reset:steps;margin:1rem 0}
+.step-list li{counter-increment:steps;display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;font-size:0.875rem;color:var(--muted2);line-height:1.6}
+.step-list li::before{content:counter(steps);font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;background:var(--surface2);color:var(--blue);border:1px solid var(--blue);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+
+/* WORLD COMPARISON TABLE */
+.compare-table{width:100%;border-collapse:collapse;margin-top:1rem;font-size:0.85rem}
+.compare-table th{text-align:left;padding:10px 14px;font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid var(--border2)}
+.compare-table td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted2)}
+.compare-table tr:last-child td{border-bottom:none}
+.compare-table tr.highlight td{color:var(--red);font-weight:500}
+.bar-cell{display:flex;align-items:center;gap:8px}
+.bar-fill{height:8px;border-radius:4px;min-width:4px}
+
+/* FOOTER */
+footer{padding:2.5rem 0;text-align:center;color:var(--muted);font-size:0.8rem;border-top:1px solid var(--border)}
+footer a{color:var(--blue);text-decoration:none}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  .charts-grid,.limit-grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .hero h1{font-size:1.8rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">Oyinlola Kayode · Data Portfolio</div>
+    <ul class="nav-links">
+      <li><a href="#abstract">Abstract</a></li>
+      <li><a href="#methodology">Methodology</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#recommendations">Recommendations</a></li>
+      <li><a href="#limitations">Limitations</a></li>
+      <li><a href="#replication">Replication</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-tag">📊 Data Analysis Portfolio Project</div>
+    <h1>Nigeria's Education Crisis:<br/><span>A Data-Driven Investigation</span></h1>
+    <p class="hero-sub">An end-to-end analysis of Nigeria's education system using 65 years of World Bank data — examining government spending, school exclusion, gender gaps, and literacy outcomes using the DIG Framework and AI-assisted analysis.</p>
+    <div class="hero-meta">
+      <div class="meta-item"><div class="meta-label">Analyst</div><div class="meta-value">Oyinlola Kayode</div></div>
+      <div class="meta-item"><div class="meta-label">Dataset</div><div class="meta-value">World Bank / UNESCO via HDX</div></div>
+      <div class="meta-item"><div class="meta-label">Records</div><div class="meta-value">9,722 rows · 449 indicators</div></div>
+      <div class="meta-item"><div class="meta-label">Period</div><div class="meta-value">1960 – 2025</div></div>
+      <div class="meta-item"><div class="meta-label">Framework</div><div class="meta-value">DIG (Describe · Introspect · Goal)</div></div>
+      <div class="meta-item"><div class="meta-label">Tools</div><div class="meta-value">Python · Chart.js · Claude AI</div></div>
+    </div>
+    <div class="badges">
+      <span class="badge">Education Policy</span>
+      <span class="badge">Sub-Saharan Africa</span>
+      <span class="badge">Gender Analysis</span>
+      <span class="badge">Time Series</span>
+      <span class="badge">Public Data</span>
+      <span class="badge">AI-Assisted Analysis</span>
+      <span class="badge">SDG 4</span>
+    </div>
+  </div>
+</div>
+
+<!-- ABSTRACT -->
+<section id="abstract">
+  <div class="container">
+    <div class="section-tag">01 · Abstract</div>
+    <div class="section-title">Project Summary</div>
+    <div class="abstract-box">
+      <p>This project investigates Nigeria's education system using longitudinal data from the World Bank and UNESCO, spanning 65 years (1960–2025). The analysis follows the DIG Framework — Description, Introspection, and Goal Setting — to systematically profile, interrogate, and derive insights from a dataset of 9,722 records covering 449 education indicators.</p>
+      <p>Four stories emerge from the data: (1) a catastrophic 90% decline in government education spending over 50 years; (2) a persistently high out-of-school population of over 9 million children despite modest improvements; (3) a historic gender literacy reversal in which female youth literacy has overtaken male literacy for the first time in recorded history; and (4) a weak but discernible relationship between government investment and educational outcomes. The findings carry direct implications for policymakers, NGOs, and development finance institutions operating in Nigeria and across Sub-Saharan Africa.</p>
+      <p>This project was conducted as part of a structured data analysis learning programme, using AI as a collaborative analytical tool. All data is publicly available, and the full methodology is documented to allow complete replication.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DATA SOURCE -->
+<section id="datasource">
+  <div class="container">
+    <div class="section-tag">02 · Data Source</div>
+    <div class="section-title">Dataset & Provenance</div>
+    <p class="section-desc">All data used in this analysis is official, publicly available, and sourced from internationally recognised institutions. No synthetic or dummy data was used.</p>
+
+    <div class="source-box">
+      <h4>Primary Dataset — World Bank Education Indicators for Nigeria</h4>
+      <p>Source: World Bank / UNESCO Institute for Statistics, distributed via the Humanitarian Data Exchange (HDX)<br/>
+      URL: <a href="https://data.humdata.org/dataset/world-bank-education-indicators-for-nigeria" target="_blank">https://data.humdata.org/dataset/world-bank-education-indicators-for-nigeria</a><br/>
+      Format: CSV · Rows: 9,722 · Columns: 6 · Indicators: 449 · Years: 1960–2025<br/>
+      Missing values: 0 · License: Creative Commons Attribution International</p>
+    </div>
+
+    <div class="source-box">
+      <h4>Dataset Structure</h4>
+      <p><strong style="color:var(--text)">Country Name</strong> — Always "Nigeria" &nbsp;|&nbsp; <strong style="color:var(--text)">Country ISO3</strong> — Always "NGA" &nbsp;|&nbsp; <strong style="color:var(--text)">Year</strong> — Integer (1960–2025) &nbsp;|&nbsp; <strong style="color:var(--text)">Indicator Name</strong> — Full description of the metric &nbsp;|&nbsp; <strong style="color:var(--text)">Indicator Code</strong> — World Bank standardised code &nbsp;|&nbsp; <strong style="color:var(--text)">Value</strong> — Numeric value for that indicator in that year</p>
+    </div>
+
+    <div class="source-box">
+      <h4>Key Indicators Used in This Analysis</h4>
+      <p>
+        <strong style="color:var(--text)">SE.PRM.UNER</strong> — Children out of school, primary &nbsp;|&nbsp;
+        <strong style="color:var(--text)">SE.ADT.LITR.ZS</strong> — Literacy rate, adult total &nbsp;|&nbsp;
+        <strong style="color:var(--text)">SE.ADT.1524.LT.MA.ZS</strong> — Literacy rate, youth male &nbsp;|&nbsp;
+        <strong style="color:var(--text)">SE.ADT.1524.LT.FE.ZS</strong> — Literacy rate, youth female &nbsp;|&nbsp;
+        <strong style="color:var(--text)">SE.XPD.TOTL.GD.ZS</strong> — Govt expenditure on education (% GDP) &nbsp;|&nbsp;
+        <strong style="color:var(--text)">SE.PRM.CMPT.ZS</strong> — Primary completion rate &nbsp;|&nbsp;
+        <strong style="color:var(--text)">SE.PRM.ENRL.TC.ZS</strong> — Pupil-teacher ratio, primary
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section id="methodology">
+  <div class="container">
+    <div class="section-tag">03 · Methodology</div>
+    <div class="section-title">Analytical Approach</div>
+    <p class="section-desc">This analysis follows the DIG Framework — a structured, three-stage approach to data analysis that ensures clarity of thinking before conclusions are drawn.</p>
+
+    <div class="method-grid">
+      <div class="method-card">
+        <div class="method-step">D — Stage 1</div>
+        <h4>Description</h4>
+        <p>Profile the dataset: dimensions, data types, time range, completeness, and column definitions. Goal: understand what you have before asking anything of it. Output: data dictionary, shape summary, quality report.</p>
+      </div>
+      <div class="method-card">
+        <div class="method-step">I — Stage 2</div>
+        <h4>Introspection</h4>
+        <p>Interrogate the data for patterns, anomalies, trends, and correlations. Ask: what is this data actually telling us? What is surprising? What is missing? Output: 4 identified story threads, visualisations, key statistics.</p>
+      </div>
+      <div class="method-card">
+        <div class="method-step">G — Stage 3</div>
+        <h4>Goal Setting</h4>
+        <p>Define a precise research question and analytical goal based on what introspection revealed. Output: master research question, 4-chapter story structure, findings, and policy recommendations.</p>
+      </div>
+      <div class="method-card">
+        <div class="method-step">AI Collaboration</div>
+        <h4>AI-Assisted Analysis</h4>
+        <p>Claude AI (Anthropic) was used as a collaborative analytical tool — for data profiling, pattern detection, visualisation, and structuring findings. All interpretations and conclusions were reviewed and validated by the analyst.</p>
+      </div>
+    </div>
+
+    <div class="findings" style="margin-top:1.5rem">
+      <h4>Analytical Steps</h4>
+      <ol class="step-list">
+        <li>Downloaded the World Bank Nigeria Education dataset from HDX (CSV format)</li>
+        <li>Loaded and profiled the dataset: 9,722 rows, 6 columns, 449 indicators, zero missing values</li>
+        <li>Identified and extracted 7 key indicators for focused analysis</li>
+        <li>Conducted trend analysis across all key indicators (1960–2025)</li>
+        <li>Computed gender gap statistics: male vs female youth literacy across 9 data points (1991–2024)</li>
+        <li>Calculated female share of out-of-school children per year</li>
+        <li>Benchmarked Nigeria's education spending against 6 comparator countries and UNESCO minimum</li>
+        <li>Estimated annual education funding gap based on 2023 GDP of $477B and UNESCO 4% minimum</li>
+        <li>Identified 4 story threads and structured findings into a coherent narrative</li>
+        <li>Built interactive visualisations and packaged results into a replicable portfolio</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results">
+  <div class="container">
+    <div class="section-tag">04 · Results</div>
+    <div class="section-title">Findings & Analysis</div>
+    <p class="section-desc">Four interconnected stories emerged from the data. Together, they tell the complete picture of Nigeria's education crisis — its causes, consequences, and quiet signs of progress.</p>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-label">Out-of-school children (2023)</div><div class="kpi-value red">9.07M</div><div class="kpi-note">Down from peak of 10.3M in 2010</div></div>
+      <div class="kpi"><div class="kpi-label">Adult literacy rate (2024)</div><div class="kpi-value green">70.4%</div><div class="kpi-note">Up from 55.5% in 1991</div></div>
+      <div class="kpi"><div class="kpi-label">Govt education spend (2023)</div><div class="kpi-value red">0.32%</div><div class="kpi-note">of GDP · Down 90% from 3.21% in 1974</div></div>
+      <div class="kpi"><div class="kpi-label">Gender literacy gap (2024)</div><div class="kpi-value green">Girls +0.1%</div><div class="kpi-note">Females lead for first time in history</div></div>
+      <div class="kpi"><div class="kpi-label">Annual education funding gap</div><div class="kpi-value amber">$17.6B</div><div class="kpi-note">vs UNESCO minimum of 4% GDP</div></div>
+      <div class="kpi"><div class="kpi-label">Peak pupil-teacher ratio</div><div class="kpi-value red">46:1</div><div class="kpi-note">In 2007 · UNESCO max = 40:1</div></div>
+    </div>
+
+    <!-- STORY 1 -->
+    <div style="margin-top:3rem">
+      <div class="story-header">
+        <div class="story-num">01</div>
+        <div><div class="story-title">The Spending Collapse</div><div class="story-desc">Nigeria's government has systematically defunded education over five decades — while its school-age population has tripled.</div></div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">Government education spend over time (% of GDP)</div>
+          <div class="chart-wrap"><canvas id="spendTrend"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Nigeria vs African peers — education spend % GDP (2023)</div>
+          <div class="chart-wrap"><canvas id="compareChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Pupil-teacher ratio over time (UNESCO max = 40)</div>
+          <div class="chart-wrap"><canvas id="pupilTeacher"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Spending vs adult literacy rate (dual axis)</div>
+          <div class="legend">
+            <div class="leg-item"><div class="leg-swatch" style="background:var(--blue)"></div>Literacy %</div>
+            <div class="leg-item"><div class="leg-swatch" style="background:var(--red);"></div>Spend % GDP</div>
+          </div>
+          <div class="chart-wrap"><canvas id="spendLiteracy"></canvas></div>
+        </div>
+      </div>
+
+      <div class="findings">
+        <h4>Story 1 — Key Findings</h4>
+        <div class="finding-item"><div class="fi-dot red"></div><span>Nigeria's education spending fell from 3.21% of GDP in 1974 to 0.32% in 2023 — a 90% decline over 50 years. This is one of the steepest sustained education funding collapses recorded for any country in the World Bank database.</span></div>
+        <div class="finding-item"><div class="fi-dot amber"></div><span>Every African comparator spends dramatically more proportionally: Kenya 5.3%, Ghana 4.0%, South Africa 6.2%. Nigeria's 0.32% is 10–19x lower than its regional peers and 13x below the UNESCO minimum recommendation of 4% of GDP.</span></div>
+        <div class="finding-item"><div class="fi-dot red"></div><span>The decline correlates with worsening classroom conditions: pupil-teacher ratios peaked at 46:1 in 2007 — 15% above UNESCO's recommended maximum. With fewer resources per child, learning quality deteriorates even where enrollment exists.</span></div>
+        <div class="finding-item"><div class="fi-dot blue"></div><span>Despite the spending collapse, adult literacy has improved — from 55.5% in 1991 to 70.4% in 2024. This suggests that private schools, NGOs, and community-funded education are absorbing a substantial portion of the deficit left by government withdrawal.</span></div>
+        <div class="finding-item"><div class="fi-dot amber"></div><span>To reach the UNESCO minimum of 4% GDP, Nigeria would need to inject an additional $17.6 billion per year into education — equivalent to the combined education budgets of several West African nations.</span></div>
+      </div>
+
+      <!-- World comparison table -->
+      <div style="margin-top:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem">
+        <div class="chart-title" style="margin-bottom:0.75rem">Education spending comparison table (% of GDP, 2023)</div>
+        <table class="compare-table">
+          <thead><tr><th>Country</th><th>Spend % GDP</th><th>vs Nigeria</th><th>Visual</th></tr></thead>
+          <tbody>
+            <tr class="highlight"><td>🇳🇬 Nigeria</td><td>0.32%</td><td>—</td><td><div class="bar-cell"><div class="bar-fill" style="width:8px;background:var(--red)"></div></div></td></tr>
+            <tr><td>UNESCO Minimum</td><td>4.00%</td><td>12.5x higher</td><td><div class="bar-cell"><div class="bar-fill" style="width:100px;background:var(--amber)"></div></div></td></tr>
+            <tr><td>Sub-Saharan Africa avg</td><td>4.10%</td><td>12.8x higher</td><td><div class="bar-cell"><div class="bar-fill" style="width:103px;background:var(--blue)"></div></div></td></tr>
+            <tr><td>World average</td><td>4.30%</td><td>13.4x higher</td><td><div class="bar-cell"><div class="bar-fill" style="width:108px;background:var(--blue)"></div></div></td></tr>
+            <tr><td>🇬🇭 Ghana</td><td>4.00%</td><td>12.5x higher</td><td><div class="bar-cell"><div class="bar-fill" style="width:100px;background:var(--green)"></div></div></td></tr>
+            <tr><td>🇰🇪 Kenya</td><td>5.30%</td><td>16.6x higher</td><td><div class="bar-cell"><div class="bar-fill" style="width:133px;background:var(--green)"></div></div></td></tr>
+            <tr><td>🇿🇦 South Africa</td><td>6.20%</td><td>19.4x higher</td><td><div class="bar-cell"><div class="bar-fill" style="width:155px;background:var(--green)"></div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STORY 2 -->
+    <div style="margin-top:3.5rem">
+      <div class="story-header">
+        <div class="story-num">02</div>
+        <div><div class="story-title">9 Million Children Left Behind</div><div class="story-desc">Nigeria has the largest out-of-school child population in the world. The data shows slow but real progress — and a persistent gender dimension.</div></div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">Out-of-school children, primary (millions)</div>
+          <div class="chart-wrap"><canvas id="oosTotal"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Female share of out-of-school children (%)</div>
+          <div class="chart-wrap"><canvas id="femaleOos"></canvas></div>
+        </div>
+      </div>
+
+      <div class="findings">
+        <h4>Story 2 — Key Findings</h4>
+        <div class="finding-item"><div class="fi-dot red"></div><span>Nigeria's out-of-school primary population grew from 7.5 million in 1999 to a peak of 10.3 million in 2010, before falling to 9.07 million in 2023. Progress is happening, but the trajectory is far too slow to meet SDG 4 targets.</span></div>
+        <div class="finding-item"><div class="fi-dot pink"></div><span>Girls have disproportionately borne the burden of exclusion. Between 1999 and 2010, females consistently made up 55–60% of out-of-school children. By 2023, their share had fallen to 51.6% — still a majority, but a significantly improving one.</span></div>
+        <div class="finding-item"><div class="fi-dot amber"></div><span>In absolute numbers (2023): 4.68 million girls vs 4.39 million boys are out of school. The 290,000 girl-majority represents a structural gender barrier in access — not a random distribution.</span></div>
+        <div class="finding-item"><div class="fi-dot blue"></div><span>The decline from 10.3M to 9.07M between 2010 and 2023 represents 1.22 million children brought into education over 13 years — roughly 94,000 per year. At that rate, eliminating the out-of-school population entirely would take nearly 100 more years.</span></div>
+      </div>
+    </div>
+
+    <!-- STORY 3 -->
+    <div style="margin-top:3.5rem">
+      <div class="story-header">
+        <div class="story-num">03</div>
+        <div><div class="story-title">The Gender Literacy Reversal</div><div class="story-desc">One of the most remarkable turnarounds in African education data: Nigerian girls went from an 18.9-point literacy deficit to overtaking boys — in 33 years.</div></div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card" style="grid-column:1/-1">
+          <div class="chart-title">Youth literacy rate: male vs female (%) — 1991 to 2024</div>
+          <div class="legend">
+            <div class="leg-item"><div class="leg-swatch" style="background:var(--blue)"></div>Male youth literacy</div>
+            <div class="leg-item"><div class="leg-swatch" style="background:var(--pink)"></div>Female youth literacy</div>
+          </div>
+          <div class="chart-wrap" style="height:260px"><canvas id="genderLiteracy"></canvas></div>
+        </div>
+      </div>
+
+      <div class="findings">
+        <h4>Story 3 — Key Findings</h4>
+        <div class="finding-item"><div class="fi-dot pink"></div><span>In 1991, male youth literacy (81.4%) was 18.9 percentage points higher than female youth literacy (62.5%). This was a significant structural gender gap rooted in historical barriers to girls' education — cultural norms, early marriage, economic deprioritisation.</span></div>
+        <div class="finding-item"><div class="fi-dot green"></div><span>By 2024, female youth literacy had risen to 81.43% — marginally overtaking male youth literacy at 81.31%. This is the first time in recorded Nigerian history that female youth literacy has matched or exceeded male literacy.</span></div>
+        <div class="finding-item"><div class="fi-dot blue"></div><span>The journey was non-linear. Female literacy dipped to 51.6% in 2008 before recovering dramatically. This volatility may reflect data collection inconsistencies in conflict-affected northern states, or genuine disruption from the Boko Haram insurgency period.</span></div>
+        <div class="finding-item"><div class="fi-dot amber"></div><span>The convergence coincides with major investments by UNICEF, USAID, and Nigerian state governments in girls' education programs, conditional cash transfer schemes, and community school initiatives — particularly in the North West and North East geopolitical zones.</span></div>
+      </div>
+    </div>
+
+    <!-- STORY 4 -->
+    <div style="margin-top:3.5rem">
+      <div class="story-header">
+        <div class="story-num">04</div>
+        <div><div class="story-title">Connecting the Dots</div><div class="story-desc">Do government spending decisions actually translate into literacy outcomes? The data suggests a weak but real relationship — with a crucial caveat.</div></div>
+      </div>
+
+      <div class="findings">
+        <h4>Story 4 — Key Findings</h4>
+        <div class="finding-item"><div class="fi-dot blue"></div><span>The correlation between government education spending (% GDP) and adult literacy rate is positive but weak in this dataset, due to limited overlapping data points. This is consistent with broader development economics literature — spending is necessary but not sufficient for literacy improvement.</span></div>
+        <div class="finding-item"><div class="fi-dot green"></div><span>Adult literacy improved from 55.5% (1991) to 70.4% (2024) despite the spending collapse — strongly suggesting that non-government actors (private schools, faith-based institutions, NGOs) have compensated for the government's withdrawal from the education market.</span></div>
+        <div class="finding-item"><div class="fi-dot red"></div><span>This creates a dangerous two-tier system: children of wealthier families access private education of reasonable quality, while children of poorer families — disproportionately in rural and northern Nigeria — are left in underfunded, overcrowded public schools or out of school entirely.</span></div>
+        <div class="finding-item"><div class="fi-dot amber"></div><span>The primary completion rate data (last available: 70.2% in 2010) combined with 9M out-of-school children suggests that a significant proportion of enrolled children do not complete primary education — pointing to retention, not just enrollment, as a critical challenge.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECOMMENDATIONS -->
+<section id="recommendations">
+  <div class="container">
+    <div class="section-tag">05 · Recommendations</div>
+    <div class="section-title">Policy & Research Recommendations</div>
+    <p class="section-desc">Based on the findings, the following evidence-based recommendations are directed at policymakers, development finance institutions, and researchers.</p>
+
+    <div class="rec-grid">
+      <div class="rec-card">
+        <div class="rec-num">01</div>
+        <h4>Reverse the spending decline — urgently</h4>
+        <p>Nigeria must establish a statutory floor of at least 4% of GDP for education spending, as recommended by UNESCO. The current 0.32% is incompatible with achieving any meaningful SDG 4 target. A phased increase to 2% by 2027 and 4% by 2030 is achievable with fiscal reallocation.</p>
+      </div>
+      <div class="rec-card">
+        <div class="rec-num">02</div>
+        <h4>Target the 4.68M out-of-school girls specifically</h4>
+        <p>Girls still constitute 51.6% of out-of-school children. Conditional cash transfers, community-based schooling, and free menstrual health provision in schools have demonstrated effectiveness in comparable contexts. These should be scaled nationally.</p>
+      </div>
+      <div class="rec-card">
+        <div class="rec-num">03</div>
+        <h4>Fix the pupil-teacher ratio crisis</h4>
+        <p>Nigeria's classrooms are dangerously overcrowded. A national teacher recruitment and retention programme, with particular focus on rural and northern states, is critical. Remote and underserved communities should receive salary incentives for qualified teachers.</p>
+      </div>
+      <div class="rec-card">
+        <div class="rec-num">04</div>
+        <h4>Shift focus from enrollment to retention</h4>
+        <p>With a primary completion rate of only 70% (2010, last available), a significant proportion of enrolled children are dropping out before finishing primary school. School feeding programmes, elimination of hidden fees, and flexible school calendars for agricultural communities are proven interventions.</p>
+      </div>
+      <div class="rec-card">
+        <div class="rec-num">05</div>
+        <h4>Improve data collection frequency</h4>
+        <p>Several key indicators (literacy rate, completion rate, out-of-school numbers) have large gaps between data points — sometimes 5–10 years. Annual or biennial data collection is essential for responsive policymaking and credible monitoring of SDG 4 progress.</p>
+      </div>
+      <div class="rec-card">
+        <div class="rec-num">06</div>
+        <h4>Disaggregate data by state and zone</h4>
+        <p>National averages mask extreme regional variation. The North West and North East zones have dramatically worse outcomes than Lagos or Abuja. Future analysis should use state-level data to identify where investment will have the highest marginal impact.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIMITATIONS -->
+<section id="limitations">
+  <div class="container">
+    <div class="section-tag">06 · Limitations</div>
+    <div class="section-title">Limitations of This Analysis</div>
+    <p class="section-desc">Transparent reporting of limitations is essential for any credible data analysis. The following constraints should be considered when interpreting these findings.</p>
+
+    <div class="limit-grid">
+      <div class="limit-card">
+        <h4>No sub-national disaggregation</h4>
+        <p>All data is at the national level. Nigeria's 36 states and 6 geopolitical zones have vastly different education outcomes. National averages can conceal extreme inequality. State-level analysis would require separate, harder-to-access datasets.</p>
+      </div>
+      <div class="limit-card">
+        <h4>Sparse literacy data points</h4>
+        <p>The literacy rate indicator has only 6 data points across 33 years (1991–2024). This makes trend analysis and correlation calculations statistically unreliable. Conclusions about literacy trends should be treated as indicative, not definitive.</p>
+      </div>
+      <div class="limit-card">
+        <h4>Completion rate data is outdated</h4>
+        <p>The most recent primary completion rate data available is from 2010. Any conclusions about current completion rates are extrapolations. This is a significant gap given 14 years of demographic and policy change since that data point.</p>
+      </div>
+      <div class="limit-card">
+        <h4>Causality cannot be established</h4>
+        <p>This is a descriptive and exploratory analysis. Correlations identified (e.g. between spending and literacy) do not imply causation. Establishing causal relationships would require controlled study designs or instrumental variable methods beyond this analysis.</p>
+      </div>
+      <div class="limit-card">
+        <h4>Out-of-school data has temporal gaps</h4>
+        <p>Out-of-school children data is available for only 10 years between 1999 and 2023, with an 11-year gap between 2010 and 2023. Trends during this gap period cannot be observed directly and may have included significant changes.</p>
+      </div>
+      <div class="limit-card">
+        <h4>Informal education not captured</h4>
+        <p>A substantial portion of Nigerian children receive education through Quranic schools (Almajiri), informal apprenticeships, and community-based programmes not captured in World Bank enrollment or literacy metrics. The true education landscape may be more complex than this dataset reflects.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REPLICATION GUIDE -->
+<section id="replication">
+  <div class="container">
+    <div class="section-tag">07 · Replication Guide</div>
+    <div class="section-title">How to Replicate This Analysis</div>
+    <p class="section-desc">This analysis is fully reproducible. Follow the steps below to replicate results from scratch, or run the included Python script to automate the process.</p>
+
+    <div class="findings" style="margin-bottom:1.5rem">
+      <h4>Step-by-step replication</h4>
+      <ol class="step-list">
+        <li>Visit <strong>https://data.humdata.org/dataset/world-bank-education-indicators-for-nigeria</strong> and download the CSV file</li>
+        <li>Install Python 3.8+ and required libraries: <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:0.8rem">pip install pandas matplotlib seaborn</code></li>
+        <li>Save the CSV to a known path on your computer (e.g. <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:0.8rem">~/data/education_nga.csv</code>)</li>
+        <li>Run the Python script from command line: <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:0.8rem">python analyze.py --file ~/data/education_nga.csv</code></li>
+        <li>Output charts and a summary CSV will be saved to an <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:0.8rem">output/</code> folder in the same directory</li>
+        <li>Review the printed summary statistics in the terminal for the full data profile</li>
+      </ol>
+    </div>
+
+    <div class="source-box">
+      <h4>Environment & Dependencies</h4>
+      <p>
+        Python 3.8+ &nbsp;|&nbsp; pandas &gt;= 1.3.0 &nbsp;|&nbsp; matplotlib &gt;= 3.4.0 &nbsp;|&nbsp; seaborn &gt;= 0.11.0 &nbsp;|&nbsp; argparse (standard library)<br/><br/>
+        All libraries are open source and freely available via pip. No API keys or paid services required.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p>Nigeria Education Crisis — Data Analysis Portfolio &nbsp;·&nbsp; Oyinlola Kayode &nbsp;·&nbsp; 2025</p>
+    <p style="margin-top:6px">Data source: <a href="https://data.humdata.org/dataset/world-bank-education-indicators-for-nigeria" target="_blank">World Bank / UNESCO via HDX</a> &nbsp;·&nbsp; Framework: DIG (Describe · Introspect · Goal) &nbsp;·&nbsp; Tools: Python, Chart.js, Claude AI</p>
+  </div>
+</footer>
+
+<script>
+const tc='#6b7394', gc='rgba(255,255,255,0.06)';
+const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11},maxRotation:45},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc}}}};
+
+// Spend trend
+new Chart(document.getElementById('spendTrend'),{type:'line',data:{labels:['1974','1975','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023'],datasets:[{data:[3.21,3.06,0.55,0.53,0.47,0.44,0.39,0.40,0.42,0.36,0.36,0.38,0.35,0.32],borderColor:'#e85d5d',backgroundColor:'rgba(232,93,93,0.08)',fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:(ctx)=>ctx.dataIndex<2?'#3ab87a':'#e85d5d'}]},options:{...base,scales:{x:{ticks:{color:tc,font:{size:10},maxRotation:45},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc},title:{display:true,text:'% of GDP',color:tc,font:{size:11}}}}}});
+
+// Compare
+new Chart(document.getElementById('compareChart'),{type:'bar',data:{labels:['Nigeria','UNESCO min','Sub-Sah. avg','World avg','Ghana','Kenya','S. Africa'],datasets:[{data:[0.32,4.0,4.1,4.3,4.0,5.3,6.2],backgroundColor:['rgba(232,93,93,0.85)','rgba(232,162,58,0.7)','rgba(74,144,217,0.7)','rgba(74,144,217,0.7)','rgba(58,184,122,0.7)','rgba(58,184,122,0.7)','rgba(58,184,122,0.7)'],borderRadius:4}]},options:{...base,scales:{x:{ticks:{color:tc,font:{size:10},maxRotation:30},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc}}}}});
+
+// Pupil teacher
+new Chart(document.getElementById('pupilTeacher'),{type:'line',data:{labels:['1980','1982','1984','1986','1988','1990','1992','1994','1996','1999','2000','2002','2004','2006','2007','2010'],datasets:[{data:[35.8,37.2,38.2,42.3,41.2,41.0,38.5,37.2,33.8,41.4,42.9,40.3,35.8,40.4,46.1,37.6],borderColor:'#e8a23a',backgroundColor:'rgba(232,162,58,0.08)',fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:'#e8a23a'}]},options:{...base,scales:{x:{ticks:{color:tc,font:{size:10},maxRotation:45,autoSkip:true},grid:{color:gc}},y:{min:28,ticks:{color:tc,font:{size:11}},grid:{color:gc},title:{display:true,text:'Pupils per teacher',color:tc,font:{size:11}}}}}});
+
+// Spend vs literacy
+new Chart(document.getElementById('spendLiteracy'),{type:'line',data:{labels:['1991','2003','2006','2016','2021','2024'],datasets:[{data:[55.5,54.8,70.2,58.2,63.2,70.4],borderColor:'#4a90d9',backgroundColor:'transparent',tension:0.3,pointRadius:5,pointBackgroundColor:'#4a90d9',yAxisID:'y'},{data:[null,null,null,0.39,0.38,null],borderColor:'#e85d5d',backgroundColor:'transparent',tension:0.3,pointRadius:5,pointBackgroundColor:'#e85d5d',yAxisID:'y2',borderDash:[5,4]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{type:'linear',position:'left',ticks:{color:'#4a90d9',font:{size:11}},grid:{color:gc},title:{display:true,text:'Literacy %',color:'#4a90d9',font:{size:11}}},y2:{type:'linear',position:'right',ticks:{color:'#e85d5d',font:{size:11}},grid:{drawOnChartArea:false},title:{display:true,text:'Spend % GDP',color:'#e85d5d',font:{size:11}}}}}});
+
+// OOS total
+new Chart(document.getElementById('oosTotal'),{type:'line',data:{labels:['1999','2000','2004','2005','2006','2007','2008','2009','2010','2023'],datasets:[{data:[7.54,7.21,7.90,8.05,8.24,7.90,9.81,9.90,10.29,9.07],borderColor:'#e85d5d',backgroundColor:'rgba(232,93,93,0.08)',fill:true,tension:0.35,pointRadius:5,pointBackgroundColor:'#e85d5d'}]},options:base});
+
+// Female OOS
+new Chart(document.getElementById('femaleOos'),{type:'line',data:{labels:['1999','2000','2004','2005','2006','2007','2008','2009','2010','2023'],datasets:[{data:[56.8,57.4,55.9,55.7,54.9,60.5,57.4,57.3,56.8,51.6],borderColor:'#d45f9e',backgroundColor:'rgba(212,95,158,0.08)',fill:true,tension:0.35,pointRadius:5,pointBackgroundColor:'#d45f9e'}]},options:{...base,scales:{x:{ticks:{color:tc,font:{size:11},maxRotation:45},grid:{color:gc}},y:{min:48,max:65,ticks:{color:tc,font:{size:11}},grid:{color:gc}}}}});
+
+// Gender literacy
+new Chart(document.getElementById('genderLiteracy'),{type:'line',data:{labels:['1991','2003','2006','2008','2013','2016','2021','2024'],datasets:[{data:[81.4,78.1,83.1,78.5,86.2,78.4,77.8,81.3],borderColor:'#4a90d9',backgroundColor:'transparent',tension:0.3,pointRadius:5,pointBackgroundColor:'#4a90d9',borderDash:[5,4]},{data:[62.5,60.5,74.5,51.6,70.8,67.1,69.1,81.4],borderColor:'#d45f9e',backgroundColor:'transparent',tension:0.3,pointRadius:5,pointBackgroundColor:'#d45f9e'}]},options:base});
+</script>
+</body>
+</html>
